@@ -1,41 +1,39 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { AnimatePresence, MotionConfig, motion, useScroll, useSpring } from 'motion/react'
-import { ArrowUp, CircleHelp, LifeBuoy, Search, X } from 'lucide-react'
-import { faqs, sections, SITE, tasks } from './content'
-import { ease, fadeUp, stagger } from './motion'
-import { AiSection, CandidatesSection, ContactSection, DocumentsSection, FaqSection, GettingStarted, TasksSection, TourSection } from './sections'
+import { ArrowUp, LifeBuoy, Menu, X } from 'lucide-react'
+import { sections, services, SITE } from './content'
+import { Magnetic, Marquee } from './components/fx'
+import { scrollToEl, scrollToTop, useSmoothScroll } from './lib/smooth'
+import Hero from './sections/Hero'
+import Flow from './sections/Flow'
+import { Ai, Apply, Contact, Documents, Faq, GettingStarted, Tasks, Tour } from './sections/Content'
 
 export default function App() {
-  const [query, setQuery] = useState('')
+  useSmoothScroll()
   const [openFaq, setOpenFaq] = useState<number | null>(0)
+  const [menu, setMenu] = useState(false)
   const active = useActiveSection()
-  const scrolled = useScrolled(24)
-  const showTop = useScrolled(700)
+  const scrolled = useScrolled(40)
+  const showTop = useScrolled(900)
 
   const { scrollYProgress } = useScroll()
   const progress = useSpring(scrollYProgress, { stiffness: 200, damping: 30, restDelta: 0.001 })
 
-  const results = useMemo(() => search(query), [query])
+  useEffect(() => {
+    document.body.style.overflow = menu ? 'hidden' : ''
+    const onKey = (e: KeyboardEvent) => e.key === 'Escape' && setMenu(false)
+    window.addEventListener('keydown', onKey)
+    return () => window.removeEventListener('keydown', onKey)
+  }, [menu])
 
-  const jumpToFaq = (i: number) => {
-    setOpenFaq(i)
-    setQuery('')
-    requestAnimationFrame(() => document.getElementById(`faq-${i}`)?.scrollIntoView({ behavior: 'smooth', block: 'center' }))
-  }
-  const jumpToTask = (i: number) => {
-    setQuery('')
-    requestAnimationFrame(() => {
-      const el = document.getElementById(`task-${i}`)
-      el?.scrollIntoView({ behavior: 'smooth', block: 'center' })
-      el?.classList.remove('flash')
-      void el?.offsetWidth
-      el?.classList.add('flash')
-    })
+  const go = (id: string) => {
+    setMenu(false)
+    scrollToEl(document.getElementById(id), id === 'how-it-works' ? 0 : -84)
   }
 
   return (
     <MotionConfig reducedMotion="user">
-      <a className="skip" href="#content">Skip to content</a>
+      <a className="skip" href="#getting-started">Skip to content</a>
       <motion.div className="progress" style={{ scaleX: progress }} aria-hidden />
 
       <header className={`topbar${scrolled ? ' is-scrolled' : ''}`}>
@@ -44,105 +42,56 @@ export default function App() {
             <img src="./assets/bestcv-logo.png" alt="" width={32} height={32} />
             <span>BestCV</span><span className="brand-sub">Help</span>
           </a>
-          <nav className="topbar-links" aria-label="BestCV">
-            <a href="#faq">FAQ</a>
-            <a className="btn btn-sm" href="#contact"><LifeBuoy size={16} aria-hidden />Support</a>
+          <nav className="nav" aria-label="On this page">
+            {sections.map(s => (
+              <a key={s.id} href={`#${s.id}`} onClick={e => { e.preventDefault(); go(s.id) }} aria-current={active === s.id ? 'true' : undefined}>
+                {active === s.id && <motion.span layoutId="nav-pill" className="nav-pill" transition={{ type: 'spring', stiffness: 420, damping: 34 }} />}
+                <span className="nav-text">{s.label}</span>
+              </a>
+            ))}
           </nav>
+          <div className="topbar-actions">
+            <Magnetic strength={0.2}><a className="btn btn-sm" href="#contact" onClick={e => { e.preventDefault(); go('contact') }}><LifeBuoy size={16} aria-hidden />Get help</a></Magnetic>
+            <button className="menu-btn" onClick={() => setMenu(true)} aria-label="Open menu" aria-expanded={menu}><Menu size={22} /></button>
+          </div>
         </div>
       </header>
 
-      <section className="hero">
-        <div className="hero-glow" aria-hidden>
-          <motion.span className="orb orb-a" animate={{ x: [0, 40, 0], y: [0, -20, 0] }} transition={{ duration: 14, repeat: Infinity, ease: 'easeInOut' }} />
-          <motion.span className="orb orb-b" animate={{ x: [0, -30, 0], y: [0, 25, 0] }} transition={{ duration: 18, repeat: Infinity, ease: 'easeInOut' }} />
-        </div>
-        <motion.div className="hero-inner" variants={stagger(0.09, 0.05)} initial="hidden" animate="show">
-          <motion.p className="eyebrow" variants={fadeUp}><CircleHelp size={16} aria-hidden />Help center</motion.p>
-          <motion.h1 variants={fadeUp}>How can we help?</motion.h1>
-          <motion.p className="hero-lead" variants={fadeUp}>
-            Post jobs, collect CVs by email and review candidates with AI support, all inside your own Microsoft Power Platform environment.
-          </motion.p>
-
-          <motion.div className="search" variants={fadeUp} role="search">
-            <Search size={20} className="search-icon" aria-hidden />
-            <input
-              type="search"
-              value={query}
-              onChange={e => setQuery(e.target.value)}
-              placeholder="Search tasks and questions"
-              aria-label="Search help"
-              aria-controls="search-results"
-            />
-            {query && (
-              <button className="search-clear" onClick={() => setQuery('')} aria-label="Clear search"><X size={18} /></button>
-            )}
-            <AnimatePresence>
-              {query.trim() && (
-                <motion.div
-                  id="search-results"
-                  className="results"
-                  initial={{ opacity: 0, y: -6, scale: 0.98 }}
-                  animate={{ opacity: 1, y: 0, scale: 1 }}
-                  exit={{ opacity: 0, y: -4, transition: { duration: 0.12 } }}
-                  transition={{ duration: 0.2, ease }}
-                  aria-live="polite"
-                >
-                  {results.tasks.length + results.faqs.length === 0 ? (
-                    <p className="results-empty">No matches. Try another word, or <a href="#contact" onClick={() => setQuery('')}>contact support</a>.</p>
-                  ) : (
-                    <>
-                      {results.tasks.length > 0 && <p className="results-label">Tasks</p>}
-                      {results.tasks.map(i => (
-                        <button key={`t${i}`} className="result" onClick={() => jumpToTask(i)}>{tasks[i].title}<span>{tasks[i].path.join(' › ')}</span></button>
-                      ))}
-                      {results.faqs.length > 0 && <p className="results-label">Questions</p>}
-                      {results.faqs.map(i => (
-                        <button key={`f${i}`} className="result" onClick={() => jumpToFaq(i)}>{faqs[i].q}</button>
-                      ))}
-                    </>
-                  )}
-                </motion.div>
-              )}
-            </AnimatePresence>
+      <AnimatePresence>
+        {menu && (
+          <motion.div className="menu" role="dialog" aria-modal="true" aria-label="Menu" initial={{ clipPath: 'circle(0% at 92% 4%)' }} animate={{ clipPath: 'circle(150% at 92% 4%)' }} exit={{ clipPath: 'circle(0% at 92% 4%)', transition: { duration: 0.35 } }} transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}>
+            <button className="menu-close" onClick={() => setMenu(false)} aria-label="Close menu" autoFocus><X size={24} /></button>
+            <motion.ul initial="hidden" animate="show" variants={{ hidden: {}, show: { transition: { staggerChildren: 0.05, delayChildren: 0.15 } } }}>
+              {sections.map((s, i) => (
+                <motion.li key={s.id} variants={{ hidden: { opacity: 0, y: 30 }, show: { opacity: 1, y: 0, transition: { type: 'spring', stiffness: 260, damping: 22 } } }}>
+                  <a href={`#${s.id}`} onClick={e => { e.preventDefault(); go(s.id) }}><small>0{i + 1}</small>{s.label}</a>
+                </motion.li>
+              ))}
+            </motion.ul>
           </motion.div>
+        )}
+      </AnimatePresence>
 
-          <motion.div className="chips" variants={fadeUp}>
-            {['Post a job', 'Review a candidate', 'Post to LinkedIn'].map(t => (
-              <button key={t} className="chip" onClick={() => jumpToTask(tasks.findIndex(x => x.title === t))}>{t}</button>
-            ))}
-          </motion.div>
-        </motion.div>
-      </section>
-
-      <div className="layout">
-        <nav className="toc" aria-label="On this page">
-          <p className="toc-title">On this page</p>
-          <ul>
-            {sections.map(s => (
-              <li key={s.id}>
-                <a href={`#${s.id}`} aria-current={active === s.id ? 'true' : undefined}>
-                  {active === s.id && <motion.span layoutId="toc-pill" className="toc-pill" transition={{ type: 'spring', stiffness: 400, damping: 34 }} />}
-                  <span className="toc-text">{s.label}</span>
-                </a>
-              </li>
-            ))}
-          </ul>
-        </nav>
-
-        <main id="content">
-          <GettingStarted />
-          <TasksSection />
-          <TourSection />
-          <CandidatesSection />
-          <FaqSection open={openFaq} setOpen={setOpenFaq} />
-          <AiSection />
-          <DocumentsSection />
-          <ContactSection />
-        </main>
-      </div>
+      <main>
+        <Hero onOpenFaq={setOpenFaq} />
+        <Marquee items={services} />
+        <GettingStarted />
+        <Flow />
+        <Tasks />
+        <Tour />
+        <Apply />
+        <Faq open={openFaq} setOpen={setOpenFaq} />
+        <Ai />
+        <Documents />
+        <Contact />
+      </main>
 
       <footer className="footer">
-        <div className="footer-inner">
+        <div className="container footer-inner">
+          <div className="footer-brand">
+            <img src="./assets/bestcv-logo.png" alt="" width={28} height={28} />
+            <span>BestCV by SRIQ Corporation (Pvt) Limited</span>
+          </div>
           <nav aria-label="BestCV links">
             <a href={SITE}>BestCV</a>
             <a href={`${SITE}/support`}>Support</a>
@@ -156,14 +105,11 @@ export default function App() {
       <AnimatePresence>
         {showTop && (
           <motion.button
-            className="to-top"
-            onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
-            aria-label="Back to top"
-            initial={{ opacity: 0, scale: 0.8, y: 12 }}
-            animate={{ opacity: 1, scale: 1, y: 0 }}
-            exit={{ opacity: 0, scale: 0.8, y: 12, transition: { duration: 0.15 } }}
-            whileHover={{ y: -2 }}
-            whileTap={{ scale: 0.92 }}
+            className="to-top" onClick={scrollToTop} aria-label="Back to top"
+            initial={{ opacity: 0, scale: 0.5, y: 20 }} animate={{ opacity: 1, scale: 1, y: 0 }}
+            exit={{ opacity: 0, scale: 0.5, y: 20, transition: { duration: 0.15 } }}
+            transition={{ type: 'spring', stiffness: 300, damping: 18 }}
+            whileHover={{ y: -3 }} whileTap={{ scale: 0.9 }}
           >
             <ArrowUp size={20} />
           </motion.button>
@@ -173,21 +119,12 @@ export default function App() {
   )
 }
 
-function search(q: string) {
-  const words = q.toLowerCase().trim().split(/\s+/).filter(Boolean)
-  const hit = (text: string) => words.length > 0 && words.every(w => text.toLowerCase().includes(w))
-  return {
-    tasks: tasks.flatMap((t, i) => (hit(`${t.title} ${t.path.join(' ')}`) ? [i] : [])),
-    faqs: faqs.flatMap((f, i) => (hit(`${f.q} ${f.a.join(' ')} ${(f.list ?? []).join(' ')}`) ? [i] : [])),
-  }
-}
-
 function useActiveSection() {
-  const [active, setActive] = useState<string>(sections[0].id)
+  const [active, setActive] = useState<string>('')
   useEffect(() => {
     const io = new IntersectionObserver(
       entries => entries.forEach(e => e.isIntersecting && setActive(e.target.id)),
-      { rootMargin: '-35% 0px -60% 0px' },
+      { rootMargin: '-45% 0px -50% 0px' },
     )
     sections.forEach(s => {
       const el = document.getElementById(s.id)

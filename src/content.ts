@@ -14,14 +14,28 @@ export const PHONE_HREF = 'tel:+94112586055'
 export const EXAMPLE_SUBJECT = 'Application for Data Analyst JP1024'
 
 export const sections = [
-  { id: 'getting-started', label: 'Getting started' },
-  { id: 'tasks', label: 'Common tasks' },
-  { id: 'tour', label: 'Screen tour' },
-  { id: 'candidates', label: 'How candidates apply' },
+  { id: 'getting-started', label: 'Start' },
+  { id: 'how-it-works', label: 'How it works' },
+  { id: 'tasks', label: 'Tasks' },
+  { id: 'tour', label: 'Tour' },
+  { id: 'candidates', label: 'Applying' },
   { id: 'faq', label: 'FAQ' },
-  { id: 'ai', label: 'How BestCV uses AI' },
-  { id: 'documents', label: 'Documents' },
-  { id: 'contact', label: 'Contact support' },
+  { id: 'ai', label: 'AI' },
+  { id: 'contact', label: 'Support' },
+] as const
+
+export const services = [
+  'Power Apps', 'Microsoft Dataverse', 'Power Automate', 'Microsoft 365 Outlook', 'Azure OpenAI',
+  'Azure AI Document Intelligence', 'LinkedIn',
+]
+
+// The hiring flow from Doc 03 sections 3 and 5, told as five stages.
+export const flow = [
+  { id: 'post', title: 'Post the job', who: 'HR', text: 'Create a job post, polish it with Write with AI, add a poster with Generate image with AI, and publish it to LinkedIn.' },
+  { id: 'apply', title: 'Candidates email their CV', who: 'Candidate', text: 'One PDF CV, sent to your HR mailbox with a subject like “Application for Data Analyst JP1024”.' },
+  { id: 'read', title: 'AI reads the CV', who: 'Azure AI Document Intelligence', text: 'The PDF is turned into text inside your own Azure subscription.' },
+  { id: 'score', title: 'AI scores the match', who: 'Azure OpenAI', text: 'The job description and CV text become a 0 to 100 score and a short summary.' },
+  { id: 'decide', title: 'A person decides', who: 'Reviewer', text: 'The reviewer reads the summary, checks the original CV and chooses Shortlisted or Rejected.' },
 ] as const
 
 export type Step = { who: string; text: string; link?: { label: string; href: string } }
