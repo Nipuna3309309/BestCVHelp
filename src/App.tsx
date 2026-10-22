@@ -69,7 +69,7 @@ export default function App() {
               type="search"
               value={query}
               onChange={e => setQuery(e.target.value)}
-              placeholder="Search tasks and questions, for example “LinkedIn”"
+              placeholder="Search tasks and questions"
               aria-label="Search help"
               aria-controls="search-results"
             />
