@@ -21,6 +21,7 @@ export const sections = [
   { id: 'candidates', label: 'Applying' },
   { id: 'faq', label: 'FAQ' },
   { id: 'ai', label: 'AI' },
+  { id: 'documents', label: 'Docs' },
   { id: 'contact', label: 'Support' },
 ] as const
 
