@@ -3,7 +3,7 @@ import { AnimatePresence, motion } from 'motion/react'
 import gsap from 'gsap'
 import { useGSAP } from '@gsap/react'
 import {
-  ArrowRight, ArrowUpRight, BookOpen, Check, ChevronDown, Clock, Copy, Cpu, FileText, Inbox, Mail, Newspaper,
+  ArrowRight, ArrowUpRight, Check, ChevronDown, Clock, Copy, Cpu, FileText, Inbox, Mail,
   Paperclip, Phone, ShieldCheck, TriangleAlert, UserCog,
 } from 'lucide-react'
 import {
@@ -310,17 +310,16 @@ export function Ai() {
 }
 
 export function Documents() {
-  const icons = [BookOpen, FileText, Newspaper]
   return (
     <Section id="documents" className="light">
       <Heading id="documents-h" kicker="Documents" title="Read more." />
       <Reveal className="doc-grid" each={0.1}>
-        {documents.map((d, i) => {
-          const Icon = icons[i]
+        {documents.map(d => {
+          const Icon = d.icon
           return (
             <motion.div key={d.title} variants={pop}>
               <Tilt className="doc-tilt" max={9}>
-                <a href={d.href} className="doc">
+                <a href={d.href} className="doc" target="_blank" rel="noopener">
                   <span className="icon-tile"><Icon size={22} aria-hidden /></span>
                   <strong>{d.title}</strong>
                   <span>{d.text}</span>

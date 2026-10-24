@@ -45,6 +45,7 @@ src/components/fx.tsx     shared effects: tilt cards, magnetic buttons, word rev
 src/lib/smooth.ts         Lenis + ScrollTrigger setup
 src/styles.css            all styles
 public/assets/            logo, favicon and three app screenshots
+public/docs/              the PDFs the Documents cards open (copied into dist/docs/ by the build)
 ```
 
 ## Screenshots
@@ -58,11 +59,7 @@ still be downloaded.
 
 1. Run `npm run build`.
 2. Upload the contents of `dist/` so that `index.html` is served at `https://sriqcorp.com/bestcv/help/`. Paths are relative, so any folder works.
-3. Upload the PDFs and release notes to `https://sriqcorp.com/bestcv/help/docs/` with these names (the Documents cards link to them):
-   - `BestCV-Product-Overview.pdf`
-   - `BestCV-Installation-and-User-Guide.pdf`
-   - `release-notes.html`
-4. Open the page in a private browser window and check every link, including privacy, terms and support.
+3. Open the page in a private browser window and check every link, including privacy, terms and support.
 
 ## Before publishing
 

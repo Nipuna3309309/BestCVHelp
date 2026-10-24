@@ -3,7 +3,7 @@
 import type { LucideIcon } from 'lucide-react'
 import {
   BriefcaseBusiness, WandSparkles, ImagePlus, Share2, CircleX, Send, UserCheck, SlidersHorizontal,
-  ScanText, Gauge, PenLine, Megaphone,
+  ScanText, Gauge, PenLine, Megaphone, BookOpen, FileText, Lock, Scale,
 } from 'lucide-react'
 
 export const SITE = 'https://sriqcorp.com/bestcv'
@@ -42,7 +42,7 @@ export const flow = [
 export type Step = { who: string; text: string; link?: { label: string; href: string } }
 
 export const gettingStarted: Step[] = [
-  { who: 'Administrator', text: 'Ask your Microsoft administrator to install BestCV and complete the setup in the BestCV Installation Guide.', link: { label: 'Installation Guide', href: '#documents' } },
+  { who: 'Administrator', text: 'Ask your Microsoft administrator to install BestCV and complete the setup in the BestCV Setup and User Guide.', link: { label: 'Setup and User Guide', href: '#documents' } },
   { who: 'Everyone', text: 'Open BestCV from make.powerapps.com or from the link your administrator shares.', link: { label: 'make.powerapps.com', href: 'https://make.powerapps.com' } },
   { who: 'Administrator', text: 'Open Configuration and add your company details, HR manager, logo and job titles.' },
 ]
@@ -92,9 +92,12 @@ export const safeguards = [
   'Administrators can see and change the scoring instructions.',
 ]
 
-// Upload these files next to the build (see README).
-export const documents = [
-  { title: 'Product Overview', text: 'What BestCV does and who it is for', href: './docs/BestCV-Product-Overview.pdf', kind: 'PDF' },
-  { title: 'Installation and User Guide', text: 'Setup for administrators and daily use', href: './docs/BestCV-Installation-and-User-Guide.pdf', kind: 'PDF' },
-  { title: 'What’s new', text: 'Release notes for each version', href: './docs/release-notes.html', kind: 'Web' },
+// The PDFs are in public/docs/ and ship with the build (see README).
+export type Doc = { title: string; text: string; href: string; kind: string; icon: LucideIcon }
+
+export const documents: Doc[] = [
+  { title: 'Product Overview', text: 'What BestCV does and who it is for', href: './docs/BestCV-Product-Overview.pdf', kind: 'PDF', icon: BookOpen },
+  { title: 'Setup and User Guide', text: 'Install, set up and test every feature', href: './docs/BestCV-Setup-and-User-Guide.pdf', kind: 'PDF', icon: FileText },
+  { title: 'Privacy Policy', text: 'What data BestCV processes and where it stays', href: './docs/BestCV-Privacy-Policy.pdf', kind: 'PDF', icon: Lock },
+  { title: 'Terms and Conditions', text: 'Licence terms for using BestCV', href: './docs/BestCV-Terms-and-Conditions.pdf', kind: 'PDF', icon: Scale },
 ]
